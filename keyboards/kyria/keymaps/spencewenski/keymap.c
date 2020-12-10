@@ -199,6 +199,8 @@ void oled_task_user(void) {
 
 #ifdef ENCODER_ENABLE
 void encoder_update_user(uint8_t index, bool clockwise) {
+    // clockwise is backwards for some reason
+    clockwise = !clockwise;
     if (index == 0) {
         // Volume control
         if (clockwise) {
@@ -217,3 +219,10 @@ void encoder_update_user(uint8_t index, bool clockwise) {
     }
 }
 #endif
+
+void keyboard_post_init_user(void) {
+#ifdef RGBLIGHT_ENABLE
+    rgblight_enable_noeeprom(); // Enables RGB, without saving settings
+    rgblight_sethsv_noeeprom(HSV_PURPLE);
+#endif
+}
