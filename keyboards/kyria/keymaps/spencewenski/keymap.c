@@ -131,6 +131,7 @@ layer_state_t layer_state_set_user(layer_state_t state) {
     return update_tri_layer_state(state, _SYMBOLS, _RAISE, _ADJUST);
 }
 
+#ifdef RAW_ENABLE
 /*
 Below is the layout of data sent in the HID API.
 
@@ -215,6 +216,7 @@ void raw_hid_receive(uint8_t *data, uint8_t length) {
     handle_commands(data, length);
     raw_hid_send(data, length);
 }
+#endif //RAW_ENABLE
 
 #ifdef OLED_DRIVER_ENABLE
 oled_rotation_t oled_init_user(oled_rotation_t rotation) {
@@ -267,6 +269,7 @@ static void render_status(void) {
         default:
             oled_write_P(PSTR("Undefined\n"), false);
     }
+#ifdef RAW_ENABLE
     oled_write_P(PSTR("OS: "), false);
     switch (currentOS) {
         case Linux:
@@ -282,6 +285,7 @@ static void render_status(void) {
             oled_write_P(PSTR("Unknown\n"), false);
             break;
     }
+#endif //RAW_ENABLE
 
     // Host Keyboard LED Status
     uint8_t led_usb_state = host_keyboard_leds();
@@ -297,7 +301,7 @@ void oled_task_user(void) {
         render_kyria_logo();
     }
 }
-#endif
+#endif //OLED_DRIVER_ENABLE
 
 #ifdef ENCODER_ENABLE
 void encoder_update_user(uint8_t index, bool clockwise) {
@@ -318,11 +322,11 @@ void encoder_update_user(uint8_t index, bool clockwise) {
         }
     }
 }
-#endif
+#endif //ENCODER_ENABLE
 
 void keyboard_post_init_user(void) {
 #ifdef RGBLIGHT_ENABLE
     rgblight_enable_noeeprom(); // Enables RGB, without saving settings
     rgblight_sethsv_noeeprom(HSV_PURPLE);
-#endif
+#endif //RGBLIGHT_ENABLE
 }
