@@ -3,7 +3,7 @@
 This is my keymap for the Kyria keyboard.
 
 ## HID API
-This keymap defines a HID API. The server side of the API is implemented here: 
+This keymap defines a HID API. The server side of the API is implemented here: https://git.sr.ht/~spencewenski/keyboard_hid
 
 Make sure `RAW_ENABLE = yes` is in the rules.mk
 
