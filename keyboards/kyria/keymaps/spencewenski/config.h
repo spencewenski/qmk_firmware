@@ -32,6 +32,9 @@
   #define ENCODER_RESOLUTION 2
 #endif
 
+#define RAW_USAGE_PAGE 0xFF62
+#define RAW_USAGE_ID 0x62
+
 // If you are using an Elite C rev3 on the slave side, uncomment the lines below:
 // #define SPLIT_USB_DETECT
 // #define NO_USB_STARTUP_CHECK

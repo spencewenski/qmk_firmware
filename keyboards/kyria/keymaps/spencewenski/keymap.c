@@ -14,6 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include QMK_KEYBOARD_H
+#include "raw_hid.h"
 
 enum layers {
     _DEFAULT = 0,
@@ -41,7 +42,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       _______,   KC_Q,   KC_W,   KC_E,    KC_R,    KC_T,                                        KC_Y,     KC_U,    KC_I,    KC_O,    KC_P,    _______,
       _______,   KC_A,   KC_S,   KC_D,    KC_F,    KC_G,                                        KC_H,     KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
       _______,   KC_Z,   KC_X,   KC_C,    KC_V,    KC_B,    _______, _______, _______, _______, KC_N,     KC_M,    KC_COMM, KC_DOT,  KC_SLSH, _______,
-                                 _______, _______, _______, _______, _______, _______, _______, _______,  _______, _______
+                                 _______, _______, _______, KC_SPC,  KC_TAB,  KC_BSPC, KC_ENT,  _______,  _______, _______
     ),
     /*
      * Symbols
@@ -130,6 +131,91 @@ layer_state_t layer_state_set_user(layer_state_t state) {
     return update_tri_layer_state(state, _SYMBOLS, _RAISE, _ADJUST);
 }
 
+/*
+Below is the layout of data sent in the HID API.
+
+Byte 0:         HIDCommand -- A value in the HIDCommand enum.
+Byte 1..N:      Command parameters -- The parameter(s) to the first HIDCommand.
+Byte N+1:       HIDCommand -- A value in the HIDCommand enum.
+Byte N+2..M:    Command parameters - The parameter(s) to the second HIDCommand.
+etc
+*/
+
+/*
+The commands available in the HID API.
+*/
+enum HIDCommand {
+    // Command to notify QMK of what OS is running on the connected computer.
+    // Takes a single parameter.
+    UpdateOS = 0x1,
+    // The end of the data in the interface
+    DataEnd = 0xFF,
+};
+
+/*
+Possible values for the parameter provided to the UpdateOS command.
+*/
+enum OS {
+    Linux = 0x1,
+    Windows = 0x2,
+    Mac = 0x3,
+};
+
+static enum OS currentOS = 0xFF;
+
+/*
+Respond to an update in the OS the keyboard is connected to.
+Return the new index value after reading the parameter(s) for this command.
+*/
+uint8_t update_os(uint8_t *data, uint8_t length, uint8_t index) {
+    // The index is already at the correct position for the next
+    // data field; check that it's a valid value.
+    if (index >= length) {
+        return index;
+    }
+    enum OS os = data[index++];
+    switch (os) {
+        case Linux:
+            // todo
+            currentOS = os;
+            break;
+        case Windows:
+            // todo
+            currentOS = os;
+            break;
+        case Mac:
+            // todo
+            currentOS = os;
+            break;
+        default:
+            break;
+    }
+    return index;
+}
+
+void handle_commands(uint8_t *data, uint8_t length) {
+    int index = 0;
+    while (index < length) {
+        enum HIDCommand command = data[index++];
+        switch (command) {
+            case DataEnd:
+                // This is the end of the command data, so exit.
+                return;
+            case UpdateOS:
+                index = update_os(data, length, index);
+                break;
+            default:
+                // unknown command
+                break;
+        }
+    }
+}
+
+void raw_hid_receive(uint8_t *data, uint8_t length) {
+    handle_commands(data, length);
+    raw_hid_send(data, length);
+}
+
 #ifdef OLED_DRIVER_ENABLE
 oled_rotation_t oled_init_user(oled_rotation_t rotation) {
 	return OLED_ROTATION_180;
@@ -180,6 +266,21 @@ static void render_status(void) {
             break;
         default:
             oled_write_P(PSTR("Undefined\n"), false);
+    }
+    oled_write_P(PSTR("OS: "), false);
+    switch (currentOS) {
+        case Linux:
+            oled_write_P(PSTR("Linux\n"), false);
+            break;
+        case Windows:
+            oled_write_P(PSTR("Windows\n"), false);
+            break;
+        case Mac:
+            oled_write_P(PSTR("Mac\n"), false);
+            break;
+        default:
+            oled_write_P(PSTR("Unknown\n"), false);
+            break;
     }
 
     // Host Keyboard LED Status
