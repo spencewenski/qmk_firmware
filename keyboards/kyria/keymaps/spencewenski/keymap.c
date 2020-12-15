@@ -149,6 +149,9 @@ enum HIDCommand {
     // Command to notify QMK of what OS is running on the connected computer.
     // Takes a single parameter.
     UpdateOS = 0x1,
+    // Command to notify QMK of what the foreground application is.
+    // Takes a single parameter.
+    UpdateForegroundApp = 0x2,
     // The end of the data in the interface
     DataEnd = 0xFF,
 };
@@ -160,9 +163,26 @@ enum OS {
     Linux = 0x1,
     Windows = 0x2,
     Mac = 0x3,
+    OtherOS = 0xFF,
 };
 
-static enum OS currentOS = 0xFF;
+/*
+Possible values for the parameter provided to the UpdateForegroundApp command.
+The API only supports specific applications for which special behavior is desired.
+*/
+enum App {
+    /*
+    A terminal application.
+    */
+    Terminal = 0x1,
+    /*
+    Any other application, for which we won't provide special behavior.
+    */
+    OtherApp = 0xFF,
+};
+
+static enum OS currentOS = OtherOS;
+static enum App currentApp = OtherApp;
 
 /*
 Respond to an update in the OS the keyboard is connected to.
@@ -189,6 +209,28 @@ uint8_t update_os(uint8_t *data, uint8_t length, uint8_t index) {
             currentOS = os;
             break;
         default:
+            currentOS = OtherOS;
+            break;
+    }
+    return index;
+}
+
+/*
+Respond to a new application becoming foreground.
+Return the new index value after reading the parameter(s) for this command.
+*/
+uint8_t update_app(uint8_t *data, uint8_t length, uint8_t index) {
+    if (index >= length) {
+        return index;
+    }
+    enum App app = data[index++];
+    switch (app) {
+        case Terminal:
+            // todo
+            currentApp = app;
+            break;
+        default:
+            currentApp = OtherApp;
             break;
     }
     return index;
@@ -204,6 +246,9 @@ void handle_commands(uint8_t *data, uint8_t length) {
                 return;
             case UpdateOS:
                 index = update_os(data, length, index);
+                break;
+            case UpdateForegroundApp:
+                index = update_app(data, length, index);
                 break;
             default:
                 // unknown command
@@ -237,20 +282,7 @@ static void render_kyria_logo(void) {
     oled_write_raw_P(kyria_logo, sizeof(kyria_logo));
 }
 
-static void render_qmk_logo(void) {
-  static const char PROGMEM qmk_logo[] = {
-    0x80,0x81,0x82,0x83,0x84,0x85,0x86,0x87,0x88,0x89,0x8a,0x8b,0x8c,0x8d,0x8e,0x8f,0x90,0x91,0x92,0x93,0x94,
-    0xa0,0xa1,0xa2,0xa3,0xa4,0xa5,0xa6,0xa7,0xa8,0xa9,0xaa,0xab,0xac,0xad,0xae,0xaf,0xb0,0xb1,0xb2,0xb3,0xb4,
-    0xc0,0xc1,0xc2,0xc3,0xc4,0xc5,0xc6,0xc7,0xc8,0xc9,0xca,0xcb,0xcc,0xcd,0xce,0xcf,0xd0,0xd1,0xd2,0xd3,0xd4,0};
-
-  oled_write_P(qmk_logo, false);
-}
-
 static void render_status(void) {
-    // QMK Logo and version information
-    render_qmk_logo();
-    oled_write_P(PSTR("Kyria rev1.0\n\n"), false);
-
     // Host Keyboard Layer Status
     oled_write_P(PSTR("Layer: "), false);
     switch (get_highest_layer(layer_state)) {
@@ -283,6 +315,16 @@ static void render_status(void) {
             break;
         default:
             oled_write_P(PSTR("Unknown\n"), false);
+            break;
+    }
+
+    oled_write_P(PSTR("App: "), false);
+    switch (currentApp) {
+        case Terminal:
+            oled_write_P(PSTR("Terminal\n"), false);
+            break;
+        default:
+            oled_write_P(PSTR("Other\n"), false);
             break;
     }
 #endif //RAW_ENABLE
