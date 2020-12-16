@@ -23,6 +23,11 @@ enum layers {
     _ADJUST
 };
 
+enum CustomKeycodes {
+    CustomCopy = SAFE_RANGE,
+    CustomPaste,
+};
+
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     /*
      * Base Layer: QWERTY
@@ -39,10 +44,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      *                        `----------------------------------'  `----------------------------------'
      */
     [_DEFAULT] = LAYOUT(
-      _______,   KC_Q,   KC_W,   KC_E,    KC_R,    KC_T,                                        KC_Y,     KC_U,    KC_I,    KC_O,    KC_P,    _______,
-      _______,   KC_A,   KC_S,   KC_D,    KC_F,    KC_G,                                        KC_H,     KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
-      _______,   KC_Z,   KC_X,   KC_C,    KC_V,    KC_B,    _______, _______, _______, _______, KC_N,     KC_M,    KC_COMM, KC_DOT,  KC_SLSH, _______,
-                                 _______, _______, _______, KC_SPC,  KC_TAB,  KC_BSPC, KC_ENT,  _______,  _______, _______
+      _______,   KC_Q,   KC_W,   KC_E,    KC_R,    KC_T,                                           KC_Y,     KC_U,    KC_I,    KC_O,    KC_P,    _______,
+      _______,   KC_A,   KC_S,   KC_D,    KC_F,    KC_G,                                           KC_H,     KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
+      _______,   KC_Z,   KC_X,   KC_C,    KC_V,    KC_B,       _______, _______, _______, _______, KC_N,     KC_M,    KC_COMM, KC_DOT,  KC_SLSH, _______,
+                                 _______, CustomPaste, CustomCopy, KC_SPC,  KC_TAB,  KC_BSPC, KC_ENT,  _______,  _______, _______
     ),
     /*
      * Symbols
@@ -372,3 +377,92 @@ void keyboard_post_init_user(void) {
     rgblight_sethsv_noeeprom(HSV_PURPLE);
 #endif //RGBLIGHT_ENABLE
 }
+
+///////////////////////////////
+/// Custom keycode handling ///
+///////////////////////////////
+
+// CustomCopy
+void handle_custom_copy_linux(uint16_t keycode, keyrecord_t *record) {
+    switch (currentApp) {
+        case Terminal:
+            SEND_STRING(SS_DOWN(X_LCTL)SS_DOWN(X_LSFT)"c"SS_UP(X_LSFT)SS_UP(X_LCTL));
+            break;
+        default:
+            SEND_STRING(SS_LCTL("c"));
+            break;
+    }
+}
+
+bool handle_custom_copy(uint16_t keycode, keyrecord_t *record) {
+    if (!record->event.pressed) {
+        return true;
+    }
+
+    switch (currentOS) {
+        case Linux:
+            handle_custom_copy_linux(keycode, record);
+            break;
+        case Mac:
+            SEND_STRING(SS_LGUI("c"));
+            break;
+        case Windows:
+            SEND_STRING(SS_LCTL("c"));
+            break;
+        default:
+            break;
+    }
+    return true;
+}
+// End CustomCopy
+
+
+// CustomPaste
+void handle_custom_paste_linux(uint16_t keycode, keyrecord_t *record) {
+    switch (currentApp) {
+        case Terminal:
+            SEND_STRING(SS_DOWN(X_LCTL)SS_DOWN(X_LSFT)"v"SS_UP(X_LSFT)SS_UP(X_LCTL));
+            break;
+        default:
+            SEND_STRING(SS_LCTL("v"));
+            break;
+    }
+}
+
+bool handle_custom_paste(uint16_t keycode, keyrecord_t *record) {
+    if (!record->event.pressed) {
+        return true;
+    }
+
+    switch (currentOS) {
+        case Linux:
+            handle_custom_paste_linux(keycode, record);
+            break;
+        case Mac:
+            SEND_STRING(SS_LGUI("v"));
+            break;
+        case Windows:
+            SEND_STRING(SS_LCTL("v"));
+            break;
+        default:
+            break;
+    }
+    return true;
+}
+// End CustomPaste
+
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    switch (keycode) {
+        case CustomCopy:
+            return handle_custom_copy(keycode, record);
+        case CustomPaste:
+            return handle_custom_paste(keycode, record);
+        default:
+            break;
+    }
+    return true;
+};
+
+///////////////////////////////////
+/// End custom keycode handling ///
+///////////////////////////////////
