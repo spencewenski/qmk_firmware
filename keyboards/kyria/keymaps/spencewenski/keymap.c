@@ -19,13 +19,16 @@
 enum layers {
     _DEFAULT = 0,
     _SYMBOLS,
-    _RAISE,
+    _NUMS,
     _ADJUST
 };
 
 enum CustomKeycodes {
-    CustomCopy = SAFE_RANGE,
-    CustomPaste,
+    CustomCopy = SAFE_RANGE,    // 'copy' that works on all OS's
+    CustomPaste,                // 'paste' that works on all OS's
+    CustomCtrl,                 // Change between ctrl and gui depending on OS (linux/windows vs mac, respectively)
+    CustomAppSwitch,            // alt+tab or gui+tab, depending on the os
+    CustomWindowSwitch,         // alt+grave or gui+grave, depending on the os
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -39,15 +42,15 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      * |--------+------+------+------+------+------+-------------.  ,-------------+------+------+------+------+------+--------|
      * |        |   Z  |   X  |   C  |   V  |   B  |      |      |  |      |      |   N  |   M  | ,  < | . >  | /  ? |        |
      * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
-     *                        |      |      |      |      |      |  |      |      |      |      |      |
-     *                        |      |      |      |      |      |  |      |      |      |      |      |
+     *                        |      | Paste| Copy | SPC  | TAB  |  | BSPC | ENT  |      |      |      |
+     *                        |      |      |      |Symbol|      |  |      |Symbol|      |      |      |
      *                        `----------------------------------'  `----------------------------------'
      */
     [_DEFAULT] = LAYOUT(
-      _______,   KC_Q,   KC_W,   KC_E,    KC_R,    KC_T,                                           KC_Y,     KC_U,    KC_I,    KC_O,    KC_P,    _______,
-      _______,   KC_A,   KC_S,   KC_D,    KC_F,    KC_G,                                           KC_H,     KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
-      _______,   KC_Z,   KC_X,   KC_C,    KC_V,    KC_B,       _______, _______, _______, _______, KC_N,     KC_M,    KC_COMM, KC_DOT,  KC_SLSH, _______,
-                                 _______, CustomPaste, CustomCopy, KC_SPC,  KC_TAB,  KC_BSPC, KC_ENT,  _______,  _______, _______
+      _______,    KC_Q,   KC_W,   KC_E,    KC_R,    KC_T,                                           KC_Y,     KC_U,    KC_I,    KC_O,    KC_P,    _______,
+      KC_LCTRL,   KC_A,   KC_S,   KC_D,    KC_F,    KC_G,                                           KC_H,     KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
+      KC_LSFT,    KC_Z,   KC_X,   KC_C,    KC_V,    KC_B,       _______, _______, _______, _______, KC_N,     KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_RSFT,
+                                  CustomCtrl, CustomCopy, CustomPaste, LT(_SYMBOLS, KC_SPC),  LT(_NUMS, KC_TAB),  LT(_NUMS, KC_BSPC), LT(_SYMBOLS, KC_ENT),  KC_DEL,  _______, KC_LGUI
     ),
     /*
      * Symbols
@@ -64,9 +67,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      *                        `----------------------------------'  `----------------------------------'
      */
      [_SYMBOLS] = LAYOUT(
-             _______, _______, _______, _______, _______, _______,                                     _______, _______, _______, _______, _______, _______,
-             _______, _______, _______, _______, _______, _______,                                     _______, _______, _______, _______, _______, _______,
-             _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
+             _______, _______, _______, _______, _______, _______,                                     _______, KC_LCBR, KC_RCBR, _______, _______,  _______,
+             _______, _______, _______, _______, _______, _______,                                     _______, KC_LPRN, KC_RPRN, _______, _______, _______,
+             _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, KC_LBRC, KC_RBRC, _______, _______, _______,
                                         _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
      ),
     /*
@@ -83,10 +86,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      *                        |      |      |      |      |      |  |      |      |      |      |      |
      *                        `----------------------------------'  `----------------------------------'
      */
-    [_RAISE] = LAYOUT(
-            _______, _______, _______, _______, _______, _______,                                     _______, _______, _______, _______, _______, _______,
-            _______, _______, _______, _______, _______, _______,                                     _______, _______, _______, _______, _______, _______,
-            _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
+    [_NUMS] = LAYOUT(
+            _______, _______, _______, _______, _______, _______,                                     KC_MINS, KC_1, KC_2, KC_3, KC_PLUS, _______,
+            _______, _______, _______, _______, _______, _______,                                     KC_SLSH, KC_4, KC_5, KC_6, KC_ASTR, _______,
+            _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, KC_0, KC_7, KC_8, KC_9, KC_EQL, _______,
                                        _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
     ),
     /*
@@ -133,7 +136,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 };
 
 layer_state_t layer_state_set_user(layer_state_t state) {
-    return update_tri_layer_state(state, _SYMBOLS, _RAISE, _ADJUST);
+    return update_tri_layer_state(state, _SYMBOLS, _NUMS, _ADJUST);
 }
 
 #ifdef RAW_ENABLE
@@ -202,15 +205,12 @@ uint8_t update_os(uint8_t *data, uint8_t length, uint8_t index) {
     enum OS os = data[index++];
     switch (os) {
         case Linux:
-            // todo
             currentOS = os;
             break;
         case Windows:
-            // todo
             currentOS = os;
             break;
         case Mac:
-            // todo
             currentOS = os;
             break;
         default:
@@ -231,7 +231,6 @@ uint8_t update_app(uint8_t *data, uint8_t length, uint8_t index) {
     enum App app = data[index++];
     switch (app) {
         case Terminal:
-            // todo
             currentApp = app;
             break;
         default:
@@ -264,8 +263,11 @@ void handle_commands(uint8_t *data, uint8_t length) {
 
 void raw_hid_receive(uint8_t *data, uint8_t length) {
     handle_commands(data, length);
-    raw_hid_send(data, length);
+    // raw_hid_send(data, length);
 }
+#else
+static enum OS currentOS = Linux;       // Default to Linux if HID is not enabled
+static enum App currentApp = OtherApp;  // Default to 'other' if HID is not enabled
 #endif //RAW_ENABLE
 
 #ifdef OLED_DRIVER_ENABLE
@@ -297,8 +299,8 @@ static void render_status(void) {
         case _SYMBOLS:
             oled_write_P(PSTR("Symbols\n"), false);
             break;
-        case _RAISE:
-            oled_write_P(PSTR("Raise\n"), false);
+        case _NUMS:
+            oled_write_P(PSTR("Numpad\n"), false);
             break;
         case _ADJUST:
             oled_write_P(PSTR("Adjust\n"), false);
@@ -451,12 +453,68 @@ bool handle_custom_paste(uint16_t keycode, keyrecord_t *record) {
 }
 // End CustomPaste
 
+
+// CustomCtrl
+bool handle_custom_ctrl(uint16_t keycode, keyrecord_t *record) {
+    uint8_t kc;
+    switch (currentOS) {
+        case Linux:
+            kc = KC_LCTRL;
+            break;
+        case Mac:
+            kc = KC_LGUI;
+            break;
+        case Windows:
+            kc = KC_LCTRL;
+            break;
+        default:
+            return true;
+            break;
+    }
+    if (record->event.pressed) {
+        register_code(kc);
+    } else {
+        unregister_code(kc);
+    }
+    return true;
+}
+// End CustomCtrl
+
+
+// CustomAppSwitch
+bool handle_custom_app_switch(uint16_t keycode, keyrecord_t *record) {
+    uint8_t kc;
+    switch (currentOS) {
+        case Linux:
+            kc = KC_LCTRL;
+            break;
+        case Mac:
+            kc = KC_LGUI;
+            break;
+        case Windows:
+            kc = KC_LCTRL;
+            break;
+        default:
+            return true;
+            break;
+    }
+    if (record->event.pressed) {
+        register_code(kc);
+    } else {
+        unregister_code(kc);
+    }
+    return true;
+}
+// End CustomAppSwitch
+
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
         case CustomCopy:
             return handle_custom_copy(keycode, record);
         case CustomPaste:
             return handle_custom_paste(keycode, record);
+        case CustomCtrl:
+            return handle_custom_ctrl(keycode, record);
         default:
             break;
     }
