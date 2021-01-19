@@ -29,7 +29,6 @@ enum CustomKeycodes {
     CustomCut,                  // 'cut' that works on all OS's
     CustomCtrl,                 // Change between ctrl and gui depending on OS (linux/windows vs mac, respectively)
     CustomAlt,                  // alt or gui, depending on the os (for application/window switching)
-    CustomWindowSwitch,         // alt+grave or gui+grave, depending on the os
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -51,7 +50,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       _______,    KC_Q,   KC_W,   KC_E,    KC_R,    KC_T,                                           KC_Y,     KC_U,    KC_I,    KC_O,    KC_P,    _______,
       CTL_T(KC_ESC),   KC_A,   KC_S,   KC_D,    KC_F,    KC_G,                                           KC_H,     KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
       SFT_T(KC_UNDS),    KC_Z,   KC_X,   KC_C,    KC_V,    KC_B,       _______, _______, _______, _______, KC_N,     KC_M,    KC_COMM, KC_DOT,  KC_SLSH, SFT_T(KC_MINS),
-                                  KC_LALT, LT(_LAYER_4, KC_HOME), CustomCtrl, LT(_LAYER_2, KC_SPC),  LT(_LAYER_3, KC_TAB),  LT(_LAYER_3, KC_BSPC), LT(_LAYER_2, KC_ENT),  LT(_LAYER_4, KC_DEL),  KC_END, KC_LGUI
+                                  KC_LALT, LT(_LAYER_4, KC_HOME), CustomCtrl, LT(_LAYER_2, KC_SPC),  LT(_LAYER_3, KC_TAB),  LT(_LAYER_3, KC_BSPC), LT(_LAYER_2, KC_ENT),  KC_DEL,  LT(_LAYER_4, KC_END), KC_LGUI
     ),
     /*
      * Symbols
@@ -109,7 +108,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      */
     [_LAYER_4] = LAYOUT(
             _______, _______, _______, _______, _______, _______,                                     _______, _______, _______, _______, _______, _______,
-            _______, _______, _______, _______, _______, _______,                                     KC_LEFT, KC_UP, KC_DOWN, KC_RIGHT, _______, _______,
+            _______, _______, _______, _______, _______, _______,                                     _______, _______, _______, _______, _______, _______,
             _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
                                        _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
     ),
@@ -136,9 +135,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 };
 
-layer_state_t layer_state_set_user(layer_state_t state) {
-    return update_tri_layer_state(state, _LAYER_2, _LAYER_3, _LAYER_4);
-}
 
 #ifdef RAW_ENABLE
 /*
@@ -379,6 +375,12 @@ void keyboard_post_init_user(void) {
     rgblight_enable_noeeprom(); // Enables RGB, without saving settings
     rgblight_sethsv_noeeprom(HSV_PURPLE);
 #endif //RGBLIGHT_ENABLE
+
+#ifdef CONSOLE_ENABLE
+    debug_enable=true;
+    // debug_matrix=true;
+    debug_keyboard=true;
+#endif //CONSOLE_ENABLE
 }
 
 ///////////////////////////////
