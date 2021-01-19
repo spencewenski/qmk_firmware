@@ -18,16 +18,17 @@
 
 enum layers {
     _DEFAULT = 0,
-    _SYMBOLS,
-    _NUMS,
-    _ADJUST
+    _LAYER_2,
+    _LAYER_3,
+    _LAYER_4
 };
 
 enum CustomKeycodes {
     CustomCopy = SAFE_RANGE,    // 'copy' that works on all OS's
     CustomPaste,                // 'paste' that works on all OS's
+    CustomCut,                  // 'cut' that works on all OS's
     CustomCtrl,                 // Change between ctrl and gui depending on OS (linux/windows vs mac, respectively)
-    CustomAppSwitch,            // alt+tab or gui+tab, depending on the os
+    CustomAlt,                  // alt or gui, depending on the os (for application/window switching)
     CustomWindowSwitch,         // alt+grave or gui+grave, depending on the os
 };
 
@@ -42,15 +43,15 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      * |--------+------+------+------+------+------+-------------.  ,-------------+------+------+------+------+------+--------|
      * |        |   Z  |   X  |   C  |   V  |   B  |      |      |  |      |      |   N  |   M  | ,  < | . >  | /  ? |        |
      * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
-     *                        |      | Paste| Copy | SPC  | TAB  |  | BSPC | ENT  |      |      |      |
-     *                        |      |      |      |Symbol|      |  |      |Symbol|      |      |      |
+     *                        |      |      |      |      |      |  |      |      |      |      |      |
+     *                        |      |      |      |      |      |  |      |      |      |      |      |
      *                        `----------------------------------'  `----------------------------------'
      */
     [_DEFAULT] = LAYOUT(
       _______,    KC_Q,   KC_W,   KC_E,    KC_R,    KC_T,                                           KC_Y,     KC_U,    KC_I,    KC_O,    KC_P,    _______,
-      KC_LCTRL,   KC_A,   KC_S,   KC_D,    KC_F,    KC_G,                                           KC_H,     KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
-      KC_LSFT,    KC_Z,   KC_X,   KC_C,    KC_V,    KC_B,       _______, _______, _______, _______, KC_N,     KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_RSFT,
-                                  CustomCtrl, CustomCopy, CustomPaste, LT(_SYMBOLS, KC_SPC),  LT(_NUMS, KC_TAB),  LT(_NUMS, KC_BSPC), LT(_SYMBOLS, KC_ENT),  KC_DEL,  _______, KC_LGUI
+      CTL_T(KC_ESC),   KC_A,   KC_S,   KC_D,    KC_F,    KC_G,                                           KC_H,     KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
+      SFT_T(KC_UNDS),    KC_Z,   KC_X,   KC_C,    KC_V,    KC_B,       _______, _______, _______, _______, KC_N,     KC_M,    KC_COMM, KC_DOT,  KC_SLSH, SFT_T(KC_MINS),
+                                  KC_LALT, LT(_LAYER_4, KC_HOME), CustomCtrl, LT(_LAYER_2, KC_SPC),  LT(_LAYER_3, KC_TAB),  LT(_LAYER_3, KC_BSPC), LT(_LAYER_2, KC_ENT),  LT(_LAYER_4, KC_DEL),  KC_END, KC_LGUI
     ),
     /*
      * Symbols
@@ -66,10 +67,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      *                        |      |      |      |      |      |  |      |      |      |      |      |
      *                        `----------------------------------'  `----------------------------------'
      */
-     [_SYMBOLS] = LAYOUT(
-             _______, _______, _______, _______, _______, _______,                                     _______, KC_LCBR, KC_RCBR, _______, _______,  _______,
-             _______, _______, _______, _______, _______, _______,                                     _______, KC_LPRN, KC_RPRN, _______, _______, _______,
-             _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, KC_LBRC, KC_RBRC, _______, _______, _______,
+     [_LAYER_2] = LAYOUT(
+             _______, _______, KC_PERC, KC_GRV,  CustomAlt, KC_TAB,                                      KC_AMPR, KC_LCBR, KC_RCBR, KC_LT, KC_GT,  _______,
+             _______, _______, _______, KC_AT,   KC_TILD, KC_CIRC,                                     KC_PIPE, KC_LPRN, KC_RPRN, KC_HASH, KC_COLN, KC_DQUO,
+             _______, _______, CustomCut, CustomCopy, CustomPaste, _______, _______, _______, _______, _______, KC_EXLM, KC_LBRC, KC_RBRC, KC_DLR, KC_QUES, _______,
                                         _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
      ),
     /*
@@ -86,10 +87,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      *                        |      |      |      |      |      |  |      |      |      |      |      |
      *                        `----------------------------------'  `----------------------------------'
      */
-    [_NUMS] = LAYOUT(
-            _______, _______, _______, _______, _______, _______,                                     KC_MINS, KC_1, KC_2, KC_3, KC_PLUS, _______,
-            _______, _______, _______, _______, _______, _______,                                     KC_SLSH, KC_4, KC_5, KC_6, KC_ASTR, _______,
-            _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, KC_0, KC_7, KC_8, KC_9, KC_EQL, _______,
+    [_LAYER_3] = LAYOUT(
+            _______, _______, KC_F1, KC_F2, KC_F3, KC_F4,                                     KC_0,    KC_1, KC_2, KC_3, KC_EQL, _______,
+            _______, _______, KC_F5, KC_F6, KC_F7, KC_F8,                                     KC_MINS, KC_4, KC_5, KC_6, KC_PLUS, _______,
+            _______, _______, KC_F9, KC_F10, KC_F11, KC_F12, _______, _______, _______, _______, KC_SLSH, KC_7, KC_8, KC_9, KC_ASTR, _______,
                                        _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
     ),
     /*
@@ -106,9 +107,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      *                        |      |      |      |      |      |  |      |      |      |      |      |
      *                        `----------------------------------'  `----------------------------------'
      */
-    [_ADJUST] = LAYOUT(
+    [_LAYER_4] = LAYOUT(
             _______, _______, _______, _______, _______, _______,                                     _______, _______, _______, _______, _______, _______,
-            _______, _______, _______, _______, _______, _______,                                     _______, _______, _______, _______, _______, _______,
+            _______, _______, _______, _______, _______, _______,                                     KC_LEFT, KC_UP, KC_DOWN, KC_RIGHT, _______, _______,
             _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
                                        _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
     ),
@@ -136,7 +137,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 };
 
 layer_state_t layer_state_set_user(layer_state_t state) {
-    return update_tri_layer_state(state, _SYMBOLS, _NUMS, _ADJUST);
+    return update_tri_layer_state(state, _LAYER_2, _LAYER_3, _LAYER_4);
 }
 
 #ifdef RAW_ENABLE
@@ -296,14 +297,14 @@ static void render_status(void) {
         case _DEFAULT:
             oled_write_P(PSTR("Default\n"), false);
             break;
-        case _SYMBOLS:
-            oled_write_P(PSTR("Symbols\n"), false);
+        case _LAYER_2:
+            oled_write_P(PSTR("Layer 2\n"), false);
             break;
-        case _NUMS:
-            oled_write_P(PSTR("Numpad\n"), false);
+        case _LAYER_3:
+            oled_write_P(PSTR("Layer 3\n"), false);
             break;
-        case _ADJUST:
-            oled_write_P(PSTR("Adjust\n"), false);
+        case _LAYER_4:
+            oled_write_P(PSTR("Layer 4\n"), false);
             break;
         default:
             oled_write_P(PSTR("Undefined\n"), false);
@@ -383,6 +384,29 @@ void keyboard_post_init_user(void) {
 ///////////////////////////////
 /// Custom keycode handling ///
 ///////////////////////////////
+
+// CustomCut
+bool handle_custom_cut(uint16_t keycode, keyrecord_t *record) {
+    if (!record->event.pressed) {
+        return true;
+    }
+
+    switch (currentOS) {
+        case Linux:
+            SEND_STRING(SS_LCTL("x"));
+            break;
+        case Mac:
+            SEND_STRING(SS_LGUI("x"));
+            break;
+        case Windows:
+            SEND_STRING(SS_LCTL("x"));
+            break;
+        default:
+            break;
+    }
+    return true;
+}
+// End CustomCut
 
 // CustomCopy
 void handle_custom_copy_linux(uint16_t keycode, keyrecord_t *record) {
@@ -481,18 +505,18 @@ bool handle_custom_ctrl(uint16_t keycode, keyrecord_t *record) {
 // End CustomCtrl
 
 
-// CustomAppSwitch
-bool handle_custom_app_switch(uint16_t keycode, keyrecord_t *record) {
+// CustomAlt
+bool handle_custom_alt(uint16_t keycode, keyrecord_t *record) {
     uint8_t kc;
     switch (currentOS) {
         case Linux:
-            kc = KC_LCTRL;
+            kc = KC_LALT;
             break;
         case Mac:
             kc = KC_LGUI;
             break;
         case Windows:
-            kc = KC_LCTRL;
+            kc = KC_LALT;
             break;
         default:
             return true;
@@ -505,7 +529,7 @@ bool handle_custom_app_switch(uint16_t keycode, keyrecord_t *record) {
     }
     return true;
 }
-// End CustomAppSwitch
+// End CustomAlt
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
@@ -513,8 +537,12 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             return handle_custom_copy(keycode, record);
         case CustomPaste:
             return handle_custom_paste(keycode, record);
+        case CustomCut:
+            return handle_custom_cut(keycode, record);
         case CustomCtrl:
             return handle_custom_ctrl(keycode, record);
+        case CustomAlt:
+            return handle_custom_alt(keycode, record);
         default:
             break;
     }
