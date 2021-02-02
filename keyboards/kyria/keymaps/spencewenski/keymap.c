@@ -538,31 +538,36 @@ bool handle_custom_alt(uint16_t keycode, keyrecord_t *record) {
 }
 // End CustomAlt
 
-// Git commands
-bool handle_git_macros(uint16_t keycode, keyrecord_t *record) {
+// Basic macros
+bool handle_basic_macros(uint16_t keycode, keyrecord_t *record) {
     if (!record->event.pressed) {
         return true;
     }
     switch (keycode) {
+        // Git
         case GitStatus:
-            SEND_STRING("git status\n");
+            SEND_STRING("git status"SS_TAP(X_ENT));
             break;
         case GitDiff:
-            SEND_STRING("git diff\n");
+            SEND_STRING("git diff"SS_TAP(X_ENT));
             break;
         case GitAdd:
-            SEND_STRING("git add .\n");
+            SEND_STRING("git add ."SS_TAP(X_ENT));
             break;
         case GitCommit:
-            SEND_STRING("git commit\n");
+            SEND_STRING("git commit"SS_TAP(X_ENT));
             break;
         case GitPull:
-            SEND_STRING("git pull\n");
+            SEND_STRING("git pull"SS_TAP(X_ENT));
+            break;
+        // Vim
+        case ExitVim:
+            SEND_STRING(SS_TAP(X_ESC)":wq"SS_TAP(X_ENT));
             break;
     }
     return true;
 }
-// End Git commands
+// End basic macros
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
@@ -576,17 +581,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             return handle_custom_ctrl(keycode, record);
         case CustomAlt:
             return handle_custom_alt(keycode, record);
-        case GitStatus:
-        case GitDiff:
-        case GitAdd:
-        case GitCommit:
-        case GitPull:
-            return handle_git_macros(keycode, record);
-        case ExitVim:
-            SEND_STRING(SS_TAP(X_ESC)":wq\n");
-            break;
         default:
-            break;
+            return handle_basic_macros(keycode, record);
     }
     return true;
 };
