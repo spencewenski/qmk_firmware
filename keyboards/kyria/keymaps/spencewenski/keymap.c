@@ -34,6 +34,7 @@ enum CustomKeycodes {
     GitAdd,
     GitCommit,
     GitPull,
+    ExitVim,
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -112,7 +113,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      *                        `----------------------------------'  `----------------------------------'
      */
     [_LAYER_4] = LAYOUT(
-            _______, _______, GitPull, GitDiff, GitStatus, _______,                                     _______, _______, _______, _______, _______, _______,
+            _______, _______, GitPull, GitDiff, GitStatus, ExitVim,                                     _______, _______, _______, _______, _______, _______,
             _______, _______, _______, GitCommit, GitAdd, _______,                                     KC_LEFT, KC_DOWN, KC_UP,   KC_RIGHT, _______, _______,
             _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
                                        _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
@@ -547,16 +548,16 @@ bool handle_git_macros(uint16_t keycode, keyrecord_t *record) {
             SEND_STRING("git status\n");
             break;
         case GitDiff:
-            SEND_STRING("git diff");
+            SEND_STRING("git diff\n");
             break;
         case GitAdd:
-            SEND_STRING("git add .");
+            SEND_STRING("git add .\n");
             break;
         case GitCommit:
-            SEND_STRING("git commit");
+            SEND_STRING("git commit\n");
             break;
         case GitPull:
-            SEND_STRING("git pull");
+            SEND_STRING("git pull\n");
             break;
     }
     return true;
@@ -581,6 +582,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         case GitCommit:
         case GitPull:
             return handle_git_macros(keycode, record);
+        case ExitVim:
+            SEND_STRING(SS_TAP(X_ESC)":wq\n");
+            break;
         default:
             break;
     }
