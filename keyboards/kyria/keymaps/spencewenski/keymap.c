@@ -29,6 +29,11 @@ enum CustomKeycodes {
     CustomCut,                  // 'cut' that works on all OS's
     CustomCtrl,                 // Change between ctrl and gui depending on OS (linux/windows vs mac, respectively)
     CustomAlt,                  // alt or gui, depending on the os (for application/window switching)
+    GitStatus,
+    GitDiff,
+    GitAdd,
+    GitCommit,
+    GitPull,
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -67,9 +72,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      *                        `----------------------------------'  `----------------------------------'
      */
      [_LAYER_2] = LAYOUT(
-             _______, _______, KC_PERC, KC_GRV,  CustomAlt, KC_TAB,                                      KC_AMPR, KC_LCBR, KC_RCBR, KC_LT, KC_GT,  _______,
-             _______, _______, _______, KC_AT,   KC_TILD, KC_CIRC,                                     KC_PIPE, KC_LPRN, KC_RPRN, KC_HASH, KC_COLN, KC_DQUO,
-             _______, _______, CustomCut, CustomCopy, CustomPaste, _______, _______, _______, _______, _______, KC_EXLM, KC_LBRC, KC_RBRC, KC_DLR, KC_QUES, _______,
+             _______, _______, KC_PERC, KC_GRV,  CustomAlt, KC_TAB,                                             KC_AMPR, KC_LCBR, KC_RCBR, KC_LT,   KC_GT,   _______,
+             _______, _______, _______, KC_AT,   KC_TILD, KC_CIRC,                                              KC_PIPE, KC_LPRN, KC_RPRN, KC_HASH, KC_COLN, KC_DQUO,
+             _______, _______, CustomCut, CustomCopy, CustomPaste, _______, _______, _______, _______, _______, KC_EXLM, KC_LBRC, KC_RBRC, KC_DLR,  KC_QUES, _______,
                                         _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
      ),
     /*
@@ -107,8 +112,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      *                        `----------------------------------'  `----------------------------------'
      */
     [_LAYER_4] = LAYOUT(
-            _______, _______, _______, _______, _______, _______,                                     _______, _______, _______, _______, _______, _______,
-            _______, _______, _______, _______, _______, _______,                                     KC_LEFT, KC_DOWN, KC_UP,   KC_RIGHT, _______, _______,
+            _______, _______, GitPull, GitDiff, GitStatus, _______,                                     _______, _______, _______, _______, _______, _______,
+            _______, _______, _______, GitCommit, GitAdd, _______,                                     KC_LEFT, KC_DOWN, KC_UP,   KC_RIGHT, _______, _______,
             _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
                                        _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
     ),
@@ -521,7 +526,6 @@ bool handle_custom_alt(uint16_t keycode, keyrecord_t *record) {
             kc = KC_LALT;
             break;
         default:
-            return true;
             break;
     }
     if (record->event.pressed) {
@@ -532,6 +536,32 @@ bool handle_custom_alt(uint16_t keycode, keyrecord_t *record) {
     return true;
 }
 // End CustomAlt
+
+// Git commands
+bool handle_git_macros(uint16_t keycode, keyrecord_t *record) {
+    if (!record->event.pressed) {
+        return true;
+    }
+    switch (keycode) {
+        case GitStatus:
+            SEND_STRING("git status\n");
+            break;
+        case GitDiff:
+            SEND_STRING("git diff");
+            break;
+        case GitAdd:
+            SEND_STRING("git add .");
+            break;
+        case GitCommit:
+            SEND_STRING("git commit");
+            break;
+        case GitPull:
+            SEND_STRING("git pull");
+            break;
+    }
+    return true;
+}
+// End Git commands
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
@@ -545,6 +575,12 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             return handle_custom_ctrl(keycode, record);
         case CustomAlt:
             return handle_custom_alt(keycode, record);
+        case GitStatus:
+        case GitDiff:
+        case GitAdd:
+        case GitCommit:
+        case GitPull:
+            return handle_git_macros(keycode, record);
         default:
             break;
     }
