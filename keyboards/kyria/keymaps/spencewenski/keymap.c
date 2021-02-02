@@ -49,7 +49,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_DEFAULT] = LAYOUT(
       _______,    KC_Q,   KC_W,   KC_E,    KC_R,    KC_T,                                           KC_Y,     KC_U,    KC_I,    KC_O,    KC_P,    _______,
       CTL_T(KC_ESC),   KC_A,   KC_S,   KC_D,    KC_F,    KC_G,                                           KC_H,     KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
-      SFT_T(KC_UNDS),    KC_Z,   KC_X,   KC_C,    KC_V,    KC_B,       _______, _______, _______, _______, KC_N,     KC_M,    KC_COMM, KC_DOT,  KC_SLSH, SFT_T(KC_MINS),
+      KC_LSFT,    KC_Z,   KC_X,   KC_C,    KC_V,    KC_B,       _______, _______, _______, _______, KC_N,     KC_M,    KC_COMM, KC_DOT,  KC_SLSH, SFT_T(KC_MINS),
                                   KC_LALT, LT(_LAYER_4, KC_HOME), CustomCtrl, LT(_LAYER_2, KC_SPC),  LT(_LAYER_3, KC_TAB),  LT(_LAYER_3, KC_BSPC), LT(_LAYER_2, KC_ENT),  KC_DEL,  LT(_LAYER_4, KC_END), KC_LGUI
     ),
     /*
@@ -108,7 +108,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      */
     [_LAYER_4] = LAYOUT(
             _______, _______, _______, _______, _______, _______,                                     _______, _______, _______, _______, _______, _______,
-            _______, _______, _______, _______, _______, _______,                                     _______, _______, _______, _______, _______, _______,
+            _______, _______, _______, _______, _______, _______,                                     KC_LEFT, KC_DOWN, KC_UP,   KC_RIGHT, _______, _______,
             _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
                                        _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
     ),
