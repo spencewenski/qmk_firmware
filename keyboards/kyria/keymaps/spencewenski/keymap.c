@@ -377,11 +377,6 @@ void encoder_update_user(uint8_t index, bool clockwise) {
 #endif //ENCODER_ENABLE
 
 void keyboard_post_init_user(void) {
-#ifdef RGBLIGHT_ENABLE
-    rgblight_enable_noeeprom(); // Enables RGB, without saving settings
-    rgblight_sethsv_noeeprom(HSV_PURPLE);
-#endif //RGBLIGHT_ENABLE
-
 #ifdef CONSOLE_ENABLE
     debug_enable=true;
     // debug_matrix=true;
