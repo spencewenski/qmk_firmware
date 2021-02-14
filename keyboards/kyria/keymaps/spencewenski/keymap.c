@@ -74,7 +74,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      */
      [_LAYER_2] = LAYOUT(
              _______, _______, KC_PERC, KC_GRV,  CustomAlt, KC_TAB,                                             KC_AMPR, KC_LCBR, KC_RCBR, KC_LT,   KC_GT,   _______,
-             _______, _______, _______, KC_AT,   KC_TILD, KC_CIRC,                                              KC_PIPE, KC_LPRN, KC_RPRN, KC_HASH, KC_COLN, KC_DQUO,
+             _______, _______, KC_BSLS, KC_AT,   KC_TILD, KC_CIRC,                                              KC_PIPE, KC_LPRN, KC_RPRN, KC_HASH, KC_COLN, KC_DQUO,
              _______, _______, CustomCut, CustomCopy, CustomPaste, _______, _______, _______, _______, _______, KC_EXLM, KC_LBRC, KC_RBRC, KC_DLR,  KC_QUES, _______,
                                         _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
      ),
