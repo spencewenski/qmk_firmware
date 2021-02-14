@@ -395,16 +395,15 @@ bool handle_custom_cut(uint16_t keycode, keyrecord_t *record) {
     }
 
     switch (currentOS) {
-        case Linux:
-            SEND_STRING(SS_LCTL("x"));
-            break;
         case Mac:
             SEND_STRING(SS_LGUI("x"));
             break;
         case Windows:
             SEND_STRING(SS_LCTL("x"));
             break;
+        case Linux:
         default:
+            SEND_STRING(SS_LCTL("x"));
             break;
     }
     return true;
@@ -429,16 +428,15 @@ bool handle_custom_copy(uint16_t keycode, keyrecord_t *record) {
     }
 
     switch (currentOS) {
-        case Linux:
-            handle_custom_copy_linux(keycode, record);
-            break;
         case Mac:
             SEND_STRING(SS_LGUI("c"));
             break;
         case Windows:
             SEND_STRING(SS_LCTL("c"));
             break;
+        case Linux:
         default:
+            handle_custom_copy_linux(keycode, record);
             break;
     }
     return true;
@@ -464,16 +462,15 @@ bool handle_custom_paste(uint16_t keycode, keyrecord_t *record) {
     }
 
     switch (currentOS) {
-        case Linux:
-            handle_custom_paste_linux(keycode, record);
-            break;
         case Mac:
             SEND_STRING(SS_LGUI("v"));
             break;
         case Windows:
             SEND_STRING(SS_LCTL("v"));
             break;
+        case Linux:
         default:
+            handle_custom_paste_linux(keycode, record);
             break;
     }
     return true;
@@ -485,17 +482,15 @@ bool handle_custom_paste(uint16_t keycode, keyrecord_t *record) {
 bool handle_custom_ctrl(uint16_t keycode, keyrecord_t *record) {
     uint8_t kc;
     switch (currentOS) {
-        case Linux:
-            kc = KC_LCTRL;
-            break;
         case Mac:
             kc = KC_LGUI;
             break;
         case Windows:
             kc = KC_LCTRL;
             break;
+        case Linux:
         default:
-            return true;
+            kc = KC_LCTRL;
             break;
     }
     if (record->event.pressed) {
@@ -512,16 +507,15 @@ bool handle_custom_ctrl(uint16_t keycode, keyrecord_t *record) {
 bool handle_custom_alt(uint16_t keycode, keyrecord_t *record) {
     uint8_t kc;
     switch (currentOS) {
-        case Linux:
-            kc = KC_LALT;
-            break;
         case Mac:
             kc = KC_LGUI;
             break;
         case Windows:
             kc = KC_LALT;
             break;
+        case Linux:
         default:
+            kc = KC_LALT;
             break;
     }
     if (record->event.pressed) {
